@@ -24,9 +24,12 @@ if __name__ == "__main__":
     else:
         net.load_state_dict(torch.load(model_path, map_location="cpu"))
     net.eval()
-    im_list = glob(dataset_path + "/*.jpg") + glob(dataset_path + "/*.JPG") + glob(dataset_path + "/*.jpeg") + glob(dataset_path + "/*.JPEG") + \
-              glob(dataset_path + "/*.png") + glob(dataset_path + "/*.PNG") + glob(dataset_path + "/*.bmp") + glob(dataset_path + "/*.BMP") + \
-              glob(dataset_path + "/*.tiff") + glob(dataset_path + "/*.TIFF")
+    # im_list = glob(dataset_path + "/*.jpg") + glob(dataset_path + "/*.JPG") + glob(dataset_path + "/*.jpeg") + glob(dataset_path + "/*.JPEG") + \
+    #           glob(dataset_path + "/*.png") + glob(dataset_path + "/*.PNG") + glob(dataset_path + "/*.bmp") + glob(dataset_path + "/*.BMP") + \
+    #           glob(dataset_path + "/*.tiff") + glob(dataset_path + "/*.TIFF")
+    im_list = glob(dataset_path + "/*.[jJ][pP][gG]") + glob(dataset_path + "/*.[jJ][pP][eE][gG]") + \
+              glob(dataset_path + "/*.[pP][nN][gG]") + glob(dataset_path + "/*.[bB][mM][pP]") + \
+              glob(dataset_path + "/*.[tT][iI][fF][fF]")
     with torch.no_grad():
         # for i, im_path in tqdm(enumerate(im_list), total=len(im_list)):
         for i, im_path in enumerate(im_list):
@@ -55,3 +58,4 @@ if __name__ == "__main__":
             # io.imsave(img_path, img_arr)
             img = Image.fromarray(img_arr.squeeze(), mode='L')  # 使用 'L' 模式表示灰度图
             img.save(img_path)
+
