@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
             if img_arr.shape[2] == 1:
                 img_arr = img_arr.squeeze()
-                img = Image.fromarray(img_arr)
+                img = Image.fromarray(img_arr, mode='L')
                 # Create composite image by blending images using a transparency mask.
                 # Image.composite(img_, Image.new("RGB", img.size, (255, 255, 255)), mask=img).show()
                 Image.composite(img_, Image.new("RGB", img.size, (255, 255, 255)), mask=img).save(os.path.join(result_path, im_name + "-seg.png"))
