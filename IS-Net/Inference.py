@@ -1,15 +1,11 @@
 import os
 import time
+import torch
 import numpy as np
-from skimage import io
-import time
+from PIL import Image
 from glob import glob
 from tqdm import tqdm
-
-import torch, gc
-import torch.nn as nn
-from torch.autograd import Variable
-import torch.optim as optim
+from skimage import io
 import torch.nn.functional as F
 from torchvision.transforms.functional import normalize
 
@@ -28,10 +24,13 @@ if __name__ == "__main__":
     else:
         net.load_state_dict(torch.load(model_path, map_location="cpu"))
     net.eval()
-    im_list = glob(dataset_path + "/*.jpg") + glob(dataset_path + "/*.JPG") + glob(dataset_path + "/*.jpeg") + glob(dataset_path + "/*.JPEG") + glob(dataset_path + "/*.png") + glob(dataset_path + "/*.PNG") + glob(
-        dataset_path + "/*.bmp") + glob(dataset_path + "/*.BMP") + glob(dataset_path + "/*.tiff") + glob(dataset_path + "/*.TIFF")
+    im_list = glob(dataset_path + "/*.jpg") + glob(dataset_path + "/*.JPG") + glob(dataset_path + "/*.jpeg") + glob(dataset_path + "/*.JPEG") + \
+              glob(dataset_path + "/*.png") + glob(dataset_path + "/*.PNG") + glob(dataset_path + "/*.bmp") + glob(dataset_path + "/*.BMP") + \
+              glob(dataset_path + "/*.tiff") + glob(dataset_path + "/*.TIFF")
     with torch.no_grad():
-        for i, im_path in tqdm(enumerate(im_list), total=len(im_list)):
+        # for i, im_path in tqdm(enumerate(im_list), total=len(im_list)):
+        for i, im_path in enumerate(im_list):
+            im_path = im_path.replace('\\', '/')
             print("im_path: ", im_path)
             im = io.imread(im_path)
             if len(im.shape) < 3:
@@ -50,4 +49,9 @@ if __name__ == "__main__":
             mi = torch.min(result)
             result = (result - mi) / (ma - mi)
             im_name = im_path.split('/')[-1].split('.')[0]
-            io.imsave(os.path.join(result_path, im_name + ".png"), (result * 255).permute(1, 2, 0).cpu().data.numpy().astype(np.uint8))
+            img_path = os.path.join(result_path, im_name + ".png")
+            img_arr = (result * 255).permute(1, 2, 0).cpu().data.numpy().astype(np.uint8)
+            # io.imsave(img_path, img_arr)
+
+            img = Image.fromarray(img_arr.squeeze(), mode='L')  # 使用 'L' 模式表示灰度图
+            img.save(img_path)
