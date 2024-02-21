@@ -32,6 +32,7 @@ if __name__ == "__main__":
         for i, im_path in enumerate(im_list):
             im_path = im_path.replace('\\', '/')
             print("im_path: ", im_path)
+            img_ = Image.open(im_path)
             im = io.imread(im_path)
             if len(im.shape) < 3:
                 im = im[:, :, np.newaxis]
@@ -52,6 +53,13 @@ if __name__ == "__main__":
             img_path = os.path.join(result_path, im_name + ".png")
             img_arr = (result * 255).permute(1, 2, 0).cpu().data.numpy().astype(np.uint8)
 
-            # io.imsave(img_path, img_arr)
-            img = Image.fromarray(img_arr.squeeze(), mode='L')  # 使用 'L' 模式表示灰度图
-            img.save(img_path)
+            # # io.imsave(img_path, img_arr)
+            # img = Image.fromarray(img_arr.squeeze(), mode='L')  # 使用 'L' 模式表示灰度图
+            # img.save(img_path)
+
+            if img_arr.shape[2] == 1:
+                img_arr = img_arr.squeeze()
+                img = Image.fromarray(img_arr)
+                # Create composite image by blending images using a transparency mask.
+                # Image.composite(img_, Image.new("RGB", img.size, (255, 255, 255)), mask=img).show()
+                Image.composite(img_, Image.new("RGB", img.size, (255, 255, 255)), mask=img).save(os.path.join(result_path, im_name + "-seg.png"))
